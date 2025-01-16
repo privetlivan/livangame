@@ -17,7 +17,7 @@ class StartScene extends Phaser.Scene {
     this.backgroundMusic = this.sys.game.backgroundMusic;
 
     this.add.image(240, 400, 'startBackground').setScale(0.5);
-
+     //Start Button
     const startButton = this.add.text(240, 350, 'Начать игру', {
       fontSize: '32px',
       fill: '#fff',
@@ -48,53 +48,60 @@ class StartScene extends Phaser.Scene {
       }
     });
 
-    const instructionsButton = this.add.text(240, 420, 'Инструкция', {
-      fontSize: '32px',
-      fill: '#fff',
-      backgroundColor: '#880a09',
-      padding: { x: 10, y: 5 },
-      fontStyle: 'bold',
-    })
-      .setInteractive()
-      .setOrigin(0.5)
-      .setName('instructionsButton');
+    //Instructions Button
+  const instructionsButton = this.add.text(240, 420, 'Инструкция', {
+    fontSize: '32px',
+    fill: '#fff',
+    backgroundColor: '#880a09',
+    padding: { x: 10, y: 5 },
+    fontStyle: 'bold',
+  })
+    .setInteractive()
+    .setOrigin(0.5)
+    .setName('instructionsButton');
 
-      instructionsButton.on('pointerdown', () => {
-        const playerName = document.getElementById('playerName').value.trim();
-        const playerPhone = document.getElementById('playerPhone').value.trim();
-  
-        if (!playerName || !playerPhone) {
-          
-          return;
-        }
-  
-        this.showInstructions();
-      });
+  instructionsButton.on('pointerdown', () => {
+    this.showInstructions();
+  });
 
-      const leaderboardButton = this.add.text(240, 490, 'Таблица лидеров', {
-        fontSize: '32px',
-        fill: '#fff',
-        backgroundColor: '#880a09',
-        padding: { x: 10, y: 5 },
-        fontStyle: 'bold',
-      })
-        .setInteractive()
-        .setOrigin(0.5);
+
+      // Leaderboard Button
+const leaderboardButton = this.add.text(240, 490, 'Таблица лидеров', {
+  fontSize: '32px',
+  fill: '#fff',
+  backgroundColor: '#880a09',
+  padding: { x: 10, y: 5 },
+  fontStyle: 'bold',
+})
+  .setInteractive()
+  .setOrigin(0.5);
+
+// Handle leaderboard button click
+leaderboardButton.on('pointerdown', async () => {
+  const playerName = document.getElementById('playerName').value.trim();
+  const playerPhone = document.getElementById('playerPhone').value.trim();
+
+  if (!playerName || !playerPhone) {
+    alert('Пожалуйста, введите ваше имя и номер телефона!');
+    return;
+  }
+
+  leaderboardButton.setVisible(false); // Hide button while loading
+  try {
+    // Use the existing fetchTopPlayers function from index.html
+    const topPlayers = await window.fetchTopPlayers();
+    this.showLeaderboard(topPlayers);
+  } catch (error) {
+    console.error('Error fetching leaderboard:', error);
+    alert('Не удалось загрузить таблицу лидеров. Попробуйте снова.');
+    leaderboardButton.setVisible(true); // Re-show button if there's an error
+  }
+});
+      this.time.delayedCall(10, () => {
+     instructionsButton.emit('pointerdown');
+    });
+  }
       
-      // Handle leaderboard button click
-      leaderboardButton.on('pointerdown', async () => {
-        leaderboardButton.setVisible(false);
-        try {
-          // Use the existing fetchTopPlayers function from index.html
-          const topPlayers = await window.fetchTopPlayers();
-          this.showLeaderboard(topPlayers);
-        } catch (error) {
-          console.error('Error fetching leaderboard:', error);
-          alert('Не удалось загрузить таблицу лидеров. Попробуйте снова.');
-        }
-      });
-      
-    }
     showLeaderboard(topPlayers) {
       // Hide main menu buttons
       this.children.getByName('startButton').setVisible(false);
@@ -250,6 +257,47 @@ class GameScene extends Phaser.Scene {
 
     this.restartButton.on('pointerdown', this.restartGame, this);
 
+     // Back to Main Menu Button (This is the new button)
+     this.backToMenuButton = this.add.text(240, 470, 'Назад в меню', {
+      fontSize: '32px',
+      fill: '#fff',
+      fontStyle: 'bold',
+      backgroundColor: '#425234',
+      padding: { x: 10, y: 5 },
+    })
+      .setOrigin(0.5)
+      .setInteractive()
+      .setVisible(false)  // Initially hidden
+      .setDepth(10);
+
+    this.backToMenuButton.on('pointerdown', () => {
+      this.endText.setVisible(false);
+      this.restartButton.setVisible(false);
+      this.score = 0;
+      this.gameOver = false;
+      this.hasShield = false;
+      this.player.clearTint();
+      this.player.setPosition(240, 700);
+      this.obstacles.clear(true, true);
+      this.powerUps.clear(true, true);
+  
+      if (this.explosion) {
+          this.explosion.destroy();
+          this.explosion = null;
+      }
+  
+      if (this.shieldTimer) {
+          this.time.removeEvent(this.shieldTimer);
+          this.shieldTimer = null;
+      }
+  
+      this.shieldTimerText.setVisible(false);
+  
+      // Transition back to the StartScene
+      this.scene.start('StartScene');
+  
+    });
+
     this.cursors = this.input.keyboard.createCursorKeys();
     this.input.on('pointermove', this.pointerMove, this);
 
@@ -379,6 +427,7 @@ class GameScene extends Phaser.Scene {
       const finalScore = Math.floor(this.score);
       this.endText.setText(`Игра окончена!\nИгрок: ${this.playerData.name}\nОчки: ${finalScore}`).setVisible(true);
       this.restartButton.setVisible(true);
+      this.backToMenuButton.setVisible(true); // Show the "Back to Main Menu" button
 
       if (this.playerData && this.playerData.id) {
         try {
