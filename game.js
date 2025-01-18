@@ -447,6 +447,7 @@ class GameScene extends Phaser.Scene {
   restartGame() {
     this.endText.setVisible(false);
     this.restartButton.setVisible(false);
+    this.backToMenuButton.setVisible(false); // Hide the back-to-menu button
     this.score = 0;
     this.gameOver = false;
     this.hasShield = false;
