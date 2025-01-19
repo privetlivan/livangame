@@ -74,7 +74,8 @@ const leaderboardButton = this.add.text(240, 490, 'Таблица лидеров
   fontStyle: 'bold',
 })
   .setInteractive()
-  .setOrigin(0.5);
+  .setOrigin(0.5)
+  .setName('leaderboardButton'); // Assign a name
 
 // Handle leaderboard button click
 leaderboardButton.on('pointerdown', async () => {
@@ -141,36 +142,52 @@ leaderboardButton.on('pointerdown', async () => {
     }
     
 
-  showInstructions() {
-    // Hide the main menu buttons
-    this.children.getByName('startButton').setVisible(false);
-    this.children.getByName('instructionsButton').setVisible(false);
-
-    // Display the instructions image
-    const instructionsImage = this.add.image(0, 0, 'instructionsImage')
-      .setOrigin(0)
-      .setDisplaySize(this.cameras.main.width, this.cameras.main.height);
-
-    // Add Back to Start button
-    const backButton = this.add.text(240, 770, 'Назад в главное меню', {
-      fontSize: '32px',
-      fill: '#fff',
-      backgroundColor: '#880a09',
-      padding: { x: 10, y: 5 },
-      fontStyle: 'bold',
-    })
-      .setInteractive()
-      .setOrigin(0.5);
-
-    backButton.on('pointerdown', () => {
-      instructionsImage.destroy(); // Destroy the instructions image
-      backButton.destroy(); // Destroy the back button
-
-      // Show the main menu buttons again
-      this.children.getByName('startButton').setVisible(true);
-      this.children.getByName('instructionsButton').setVisible(true);
-    });
-  }
+    showInstructions() {
+      // Retrieve buttons
+      const startButton = this.children.getByName('startButton');
+      const instructionsButton = this.children.getByName('instructionsButton');
+      const leaderboardButton = this.children.getByName('leaderboardButton');
+    
+      // Hide the main menu buttons safely
+      if (startButton) startButton.setVisible(false);
+      if (instructionsButton) instructionsButton.setVisible(false);
+      if (leaderboardButton) {
+        leaderboardButton.setVisible(false);
+        leaderboardButton.disableInteractive(); // Disable interactivity
+      }
+    
+      // Display the instructions image
+      const instructionsImage = this.add.image(0, 0, 'instructionsImage')
+        .setOrigin(0)
+        .setDisplaySize(this.cameras.main.width, this.cameras.main.height);
+    
+      // Add Back to Start button
+      const backButton = this.add.text(240, 770, 'Назад в главное меню', {
+        fontSize: '32px',
+        fill: '#fff',
+        backgroundColor: '#880a09',
+        padding: { x: 10, y: 5 },
+        fontStyle: 'bold',
+      })
+        .setInteractive()
+        .setOrigin(0.5);
+    
+      backButton.on('pointerdown', () => {
+        instructionsImage.destroy(); // Destroy the instructions image
+        backButton.destroy(); // Destroy the back button
+    
+        // Show the main menu buttons again safely
+        if (startButton) startButton.setVisible(true);
+        if (instructionsButton) instructionsButton.setVisible(true);
+        if (leaderboardButton) {
+          leaderboardButton.setVisible(true);
+          leaderboardButton.setInteractive(); // Re-enable interactivity
+        }
+      });
+    }
+    
+    
+    
 }
 
 class GameScene extends Phaser.Scene {
