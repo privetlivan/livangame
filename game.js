@@ -4,7 +4,7 @@ class StartScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image('startBackground', 'https://raw.githubusercontent.com/BahaaMurad/livangame/main/images/startBackground.jpg');
+    this.load.image('startBackground', 'https://raw.githubusercontent.com/BahaaMurad/livangame/main/images/startBackground.png');
     this.load.image('instructionsImage', 'https://raw.githubusercontent.com/BahaaMurad/livangame/main/images/instructions-new.jpg'); // Load the instructions image
     this.load.audio('backgroundMusic', 'https://raw.githubusercontent.com/BahaaMurad/music/main/background-music.mp3');
   }
