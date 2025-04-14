@@ -196,7 +196,7 @@ class GameScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image('player', 'https://raw.githubusercontent.com/BahaaMurad/livangame/main/images/player.png'); //player.png
+    this.load.image('player', 'https://raw.githubusercontent.com/BahaaMurad/livangame/main/images/misha.png'); //player.png
     this.load.image('dangerObstacle', 'https://raw.githubusercontent.com/BahaaMurad/livangame/main/images/dangerObstacle.png'); //dangerObstacle.png
     this.load.image('bonusObstacle', 'https://raw.githubusercontent.com/BahaaMurad/livangame/main/images/bonusObstacle.png'); //bonusObstacle.png
     this.load.image('shieldPowerUp', 'https://raw.githubusercontent.com/BahaaMurad/livangame/main/images/1625125.png'); // Shield power-up image 1625125.png
